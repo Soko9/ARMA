@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36221.1 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserManagementApi", "UserManagementApi\UserManagementApi.csproj", "{79D8D037-B3CC-4F4B-A85C-B1D92248E437}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{79D8D037-B3CC-4F4B-A85C-B1D92248E437}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79D8D037-B3CC-4F4B-A85C-B1D92248E437}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79D8D037-B3CC-4F4B-A85C-B1D92248E437}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79D8D037-B3CC-4F4B-A85C-B1D92248E437}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C13786BB-5D8E-4B38-AA9E-6B9FBFFD3ECD}
+	EndGlobalSection
+EndGlobal
