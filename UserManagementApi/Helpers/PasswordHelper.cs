@@ -29,5 +29,16 @@ namespace UserManagementApi.Helpers
 
             return Hash == StoredHash;
         }
+
+        public static string GenerateRandomPasscode(int Length = 5)
+        {
+            StringBuilder Passcode = new StringBuilder(Length);
+            Random Random = new Random();
+            for (int i = 0; i < Length; i++)
+            {
+                Passcode.Append(Random.Next(0, 10));
+            }
+            return Passcode.ToString();
+        }
     }
 }

@@ -18,7 +18,7 @@ namespace UserManagementApi.Services
             _Log = Log;
         }
 
-        public async Task<bool> CreateAsync(RolesPermissionDTO Dto)
+        public async Task<bool> CreateAsync(RolesPermissionsDTO Dto)
         {
             RolesPermission Entity = new RolesPermission
             {

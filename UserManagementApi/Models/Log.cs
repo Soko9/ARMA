@@ -12,7 +12,7 @@ public partial class Log
 
     public Guid ActionRowId { get; set; }
 
-    public Guid ActionUserId { get; set; }
+    public Guid? ActionUserId { get; set; }
 
     public DateTime ActionAt { get; set; }
 

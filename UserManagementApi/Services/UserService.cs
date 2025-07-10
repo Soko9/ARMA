@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UserManagementApi.DTOs.User;
+using UserManagementApi.Helpers;
 using UserManagementApi.Models;
 using UserManagementApi.Repo;
 
@@ -43,13 +44,15 @@ namespace UserManagementApi.Services
 
         public async Task<bool> CreateAsync(UserDTO Dto)
         {
+            (string Password, string Salt) = PasswordHelper.HashPassword(Dto.Password);
+            (string Passcode, _) = PasswordHelper.HashPassword(PasswordHelper.GenerateRandomPasscode());
             User Entity = new User
             {
                 UserId = Guid.NewGuid(),
                 FullName = Dto.FullName,
-                PasscodeHash = Dto.PasscodeHash,
-                PasswordHash = Dto.PasswordHash,
-                PasswordSalt = Dto.PasswordSalt,
+                PasscodeHash = Passcode,
+                PasswordHash = Password,
+                PasswordSalt = Salt,
                 FailedLoginAttempts = 0,
                 IsLocked = false,
                 IsActive = true,
@@ -248,14 +251,117 @@ namespace UserManagementApi.Services
             }
         }
 
-        public Task<bool> ResetPasswordAsync(Guid Id, Guid ActionId)
+        public async Task<bool> ResetPasswordAsync(Guid Id, UserDTO Dto)
         {
-            throw new NotImplementedException();
+            try
+            {
+                User? Entity = await _Table.FindAsync(Id);
+
+                if (Entity is null)
+                {
+                    throw new ArgumentNullException($"No Entity Found With ID: {Id}");
+                }
+
+                (string Password, string Salt) = PasswordHelper.HashPassword(Dto.Password!);
+
+                Entity.PasswordHash = Password;
+                Entity.PasswordSalt = Salt;
+                Entity.UpdatedAt = DateTime.Now;
+                Entity.LastActionUserId = Dto.LastActionUserId;
+
+                _Table.Update(Entity);
+                bool saved = await _Db.SaveChangesAsync() > 0;
+
+                if (saved)
+                {
+                    await _Log.LogAsync(
+                        "Reset Password",
+                        "Password Updated Successfully",
+                        "Users",
+                        Id,
+                        Dto.LastActionUserId
+                    );
+                }
+                return saved;
+            }
+            catch (ArgumentNullException ex)
+            {
+                await _Log.LogAsync(
+                    "Error",
+                    $"Error Fetching User: {ex.Message}",
+                    "Users",
+                    Id,
+                    Dto.LastActionUserId
+                );
+                return false;
+            }
+            catch (Exception ex)
+            {
+                await _Log.LogAsync(
+                    "Error",
+                    $"Error Updating Password: {ex.Message}",
+                    "Users",
+                    Id,
+                    Dto.LastActionUserId
+                );
+                return false;
+            }
         }
 
-        public Task<bool> ResetPasscodeAsync(Guid Id, Guid ActionId)
+        public async Task<bool> ResetPasscodeAsync(Guid Id, Guid ActionId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                User? Entity = await _Table.FindAsync(Id);
+
+                if (Entity is null)
+                {
+                    throw new ArgumentNullException($"No Entity Found With ID: {Id}");
+                }
+
+                (string Passcode, _) = PasswordHelper.HashPassword(PasswordHelper.GenerateRandomPasscode());
+
+                Entity.PasscodeHash = Passcode;
+                Entity.UpdatedAt = DateTime.Now;
+                Entity.LastActionUserId = ActionId;
+
+                _Table.Update(Entity);
+                bool saved = await _Db.SaveChangesAsync() > 0;
+
+                if (saved)
+                {
+                    await _Log.LogAsync(
+                        "Reset Passcode",
+                        "Passcode Updated Successfully",
+                        "Users",
+                        Id,
+                        ActionId
+                    );
+                }
+                return saved;
+            }
+            catch (ArgumentNullException ex)
+            {
+                await _Log.LogAsync(
+                    "Error",
+                    $"Error Fetching User: {ex.Message}",
+                    "Users",
+                    Id,
+                    ActionId
+                );
+                return false;
+            }
+            catch (Exception ex)
+            {
+                await _Log.LogAsync(
+                    "Error",
+                    $"Error Updating Passcode: {ex.Message}",
+                    "Users",
+                    Id,
+                    ActionId
+                );
+                return false;
+            }
         }
     }
 }

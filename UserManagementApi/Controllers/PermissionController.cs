@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UserManagementApi.Constants;
-using UserManagementApi.DTOs.PermissionCategory;
+using UserManagementApi.DTOs.Permission;
 using UserManagementApi.Repo;
 
 namespace UserManagementApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class PermissionCategoryController : ControllerBase
+    public class PermissionController : ControllerBase
     {
-        private readonly IPermissionCategoryService _Service;
+        private readonly IPermissionService _Service;
 
-        public PermissionCategoryController(IPermissionCategoryService Service)
+        public PermissionController(IPermissionService Service)
         {
             _Service = Service;
         }
@@ -19,30 +19,30 @@ namespace UserManagementApi.Controllers
         [HttpGet("get-by-id/{Id:Guid}")]
         public async Task<IActionResult> GetById(Guid Id)
         {
-            var Category = await _Service.GetByIDAsync(Id);
+            var Permission = await _Service.GetByIDAsync(Id);
 
-            if (Category == null)
-                return NotFound(new { Message = Messages.NotFound("Permission Category") });
+            if (Permission == null)
+                return NotFound(new { Message = Messages.NotFound("Permission") });
 
-            return Ok(Category);
+            return Ok(Permission);
         }
 
         [HttpGet("get-all")]
         public async Task<IActionResult> GetAll()
         {
-            var Categories = await _Service.GetAllAsync();
-            return Ok(Categories);
+            var Permissions = await _Service.GetAllAsync();
+            return Ok(Permissions);
         }
 
         [HttpGet("get-all-visible")]
         public async Task<IActionResult> GetAllVisible()
         {
-            var Categories = await _Service.GetAllVisibleAsync();
-            return Ok(Categories);
+            var Permissions = await _Service.GetAllVisibleAsync();
+            return Ok(Permissions);
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromBody] PermissionCategoryDTO Dto)
+        public async Task<IActionResult> Create([FromBody] PermissionDTO Dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -50,26 +50,26 @@ namespace UserManagementApi.Controllers
             var Created = await _Service.CreateAsync(Dto);
 
             if (!Created)
-                return StatusCode(500, new { Message = Messages.PCCreateError() });
+                return StatusCode(500, new { Message = Messages.PCreateError() });
 
-            return Ok(new { Massage = Messages.PCCreateSuccess() });
+            return Ok(new { Message = Messages.PCreateSuccess() });
         }
 
         [HttpPut("update/{Id:Guid}")]
-        public async Task<IActionResult> Update(Guid Id, [FromBody] PermissionCategoryDTO Dto)
+        public async Task<IActionResult> Update(Guid Id, [FromBody] PermissionDTO Dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (Dto.PermissionCategoryId == null || Dto.PermissionCategoryId != Id)
+            if (Dto.PermissionId == null || Dto.PermissionId != Id)
                 return BadRequest(new { Message = Messages.Mismatch() });
 
             var Updated = await _Service.UpdateAsync(Dto);
 
             if (!Updated)
-                return NotFound(new { Message = Messages.PCUpdateError() });
+                return NotFound(new { Message = Messages.PUpdateError() });
 
-            return Ok(new { Message = Messages.PCUpdateSuccess() });
+            return Ok(new { Message = Messages.PUpdateSuccess() });
         }
 
         [HttpPatch("{Id:Guid}/toggle-visibility")]
@@ -78,9 +78,9 @@ namespace UserManagementApi.Controllers
             var Toggled = await _Service.ToggleVisibility(Id, ActionId);
 
             if (!Toggled)
-                return NotFound(new { Message = Messages.PCToggleError() });
+                return NotFound(new { Message = Messages.PToggleError() });
 
-            return Ok(new { Message = Messages.PCToggleSuccess() });
+            return Ok(new { Message = Messages.PToggleSuccess() });
         }
 
         [HttpDelete("delete/{Id:Guid}")]
@@ -89,9 +89,9 @@ namespace UserManagementApi.Controllers
             var Deleted = await _Service.DeleteAsync(Id, ActionId);
 
             if (!Deleted)
-                return NotFound(new { Message = Messages.PCDeleteError() });
+                return NotFound(new { Message = Messages.PDeleteError() });
 
-            return Ok(new { Message = Messages.PCDeleteSuccess() });
+            return Ok(new { Message = Messages.PDeleteSuccess() });
         }
     }
 }

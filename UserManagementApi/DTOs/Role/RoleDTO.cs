@@ -10,6 +10,6 @@
 
         public byte Priority { get; set; }
 
-        public Guid LastActionUserId { get; set; }
+        public Guid? LastActionUserId { get; set; }
     }
 }

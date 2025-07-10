@@ -14,7 +14,7 @@ public partial class RolesPermission
 
     public DateTime UpdatedAt { get; set; }
 
-    public Guid LastActionUserId { get; set; }
+    public Guid? LastActionUserId { get; set; }
 
     public virtual User LastActionUser { get; set; } = null!;
 

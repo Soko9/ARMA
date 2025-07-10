@@ -14,7 +14,7 @@ public partial class Permission
 
     public DateTime UpdatedAt { get; set; }
 
-    public Guid LastActionUserId { get; set; }
+    public Guid? LastActionUserId { get; set; }
 
     public Guid PermissionCategoryId { get; set; }
 
