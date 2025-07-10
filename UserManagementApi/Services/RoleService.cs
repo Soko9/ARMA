@@ -66,7 +66,7 @@ namespace UserManagementApi.Services
                         "Role Created Successfully",
                         "Roles",
                         Entity.RoleId,
-                        Dto.LastActionUserId
+                        Dto.LastActionUserId ?? Guid.Empty
                     );
                 }
                 return saved;
@@ -78,7 +78,7 @@ namespace UserManagementApi.Services
                     $"Error Creating Role: {ex.Message}",
                     "Roles",
                     Entity.RoleId,
-                    Dto.LastActionUserId
+                    Dto.LastActionUserId ?? Guid.Empty
                 );
                 return false;
             }
@@ -111,7 +111,7 @@ namespace UserManagementApi.Services
                         "Role Updated Successfully",
                         "Roles",
                         Entity.RoleId,
-                        Dto.LastActionUserId
+                        Dto.LastActionUserId ?? Guid.Empty
                     );
                 }
                 return saved;
@@ -123,7 +123,7 @@ namespace UserManagementApi.Services
                     $"Error Fetching Role: {ex.Message}",
                     "Roles",
                     Dto.RoleId ?? Guid.Empty,
-                    Dto.LastActionUserId
+                    Dto.LastActionUserId ?? Guid.Empty
                 );
                 return false;
             }
@@ -134,7 +134,7 @@ namespace UserManagementApi.Services
                     $"Error Updating Role: {ex.Message}",
                     "Roles",
                     Dto.RoleId ?? Guid.Empty,
-                    Dto.LastActionUserId
+                    Dto.LastActionUserId ?? Guid.Empty
                 );
                 return false;
             }

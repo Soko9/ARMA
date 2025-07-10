@@ -41,7 +41,7 @@ namespace UserManagementApi.Services
                         "RolePermission Created Successfully",
                         "RolesPermissions",
                         Entity.RolePermissionId,
-                        Dto.LastActionUserId
+                        Dto.LastActionUserId ?? Guid.Empty
                     );
                 }
                 return saved;
@@ -53,7 +53,7 @@ namespace UserManagementApi.Services
                     $"Error Creating RolePermission: {ex.Message}",
                     "RolesPermissions",
                     Entity.RolePermissionId,
-                    Dto.LastActionUserId
+                    Dto.LastActionUserId ?? Guid.Empty
                 );
                 return false;
             }

@@ -44,7 +44,7 @@ namespace UserManagementApi.Services
 
         public async Task<bool> CreateAsync(UserDTO Dto)
         {
-            (string Password, string Salt) = PasswordHelper.HashPassword(Dto.Password);
+            (string Password, string Salt) = PasswordHelper.HashPassword(Dto.Password!);
             (string Passcode, _) = PasswordHelper.HashPassword(PasswordHelper.GenerateRandomPasscode());
             User Entity = new User
             {
@@ -74,7 +74,7 @@ namespace UserManagementApi.Services
                         "User Created Successfully",
                         "Users",
                         Entity.UserId,
-                        Dto.LastActionUserId
+                        Dto.LastActionUserId ?? Guid.Empty
                     );
                 }
                 return saved;
@@ -86,7 +86,7 @@ namespace UserManagementApi.Services
                     $"Error Creating User: {ex.Message}",
                     "Users",
                     Entity.UserId,
-                    Dto.LastActionUserId
+                    Dto.LastActionUserId ?? Guid.Empty
                 );
                 return false;
             }
@@ -118,7 +118,7 @@ namespace UserManagementApi.Services
                         "User Updated Successfully",
                         "Users",
                         Entity.UserId,
-                        Dto.LastActionUserId
+                        Dto.LastActionUserId ?? Guid.Empty
                     );
                 }
                 return saved;
@@ -130,7 +130,7 @@ namespace UserManagementApi.Services
                     $"Error Fetching User: {ex.Message}",
                     "Users",
                     Dto.UserId ?? Guid.Empty,
-                    Dto.LastActionUserId
+                    Dto.LastActionUserId ?? Guid.Empty
                 );
                 return false;
             }
@@ -141,7 +141,7 @@ namespace UserManagementApi.Services
                     $"Error Updating User: {ex.Message}",
                     "Users",
                     Dto.UserId ?? Guid.Empty,
-                    Dto.LastActionUserId
+                    Dto.LastActionUserId ?? Guid.Empty
                 );
                 return false;
             }
@@ -279,7 +279,7 @@ namespace UserManagementApi.Services
                         "Password Updated Successfully",
                         "Users",
                         Id,
-                        Dto.LastActionUserId
+                        Dto.LastActionUserId ?? Guid.Empty
                     );
                 }
                 return saved;
@@ -291,7 +291,7 @@ namespace UserManagementApi.Services
                     $"Error Fetching User: {ex.Message}",
                     "Users",
                     Id,
-                    Dto.LastActionUserId
+                    Dto.LastActionUserId ?? Guid.Empty
                 );
                 return false;
             }
@@ -302,7 +302,7 @@ namespace UserManagementApi.Services
                     $"Error Updating Password: {ex.Message}",
                     "Users",
                     Id,
-                    Dto.LastActionUserId
+                    Dto.LastActionUserId ?? Guid.Empty
                 );
                 return false;
             }

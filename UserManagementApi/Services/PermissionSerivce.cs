@@ -59,7 +59,7 @@ namespace UserManagementApi.Services
                         "Permission Created Successfully",
                         "Permissions",
                         Entity.PermissionId,
-                        Dto.LastActionUserId
+                        Dto.LastActionUserId ?? Guid.Empty
                     );
                 }
                 return saved;
@@ -71,7 +71,7 @@ namespace UserManagementApi.Services
                     $"Error Creating Permission: {ex.Message}",
                     "Permissions",
                     Entity.PermissionId,
-                    Dto.LastActionUserId
+                    Dto.LastActionUserId ?? Guid.Empty
                 );
                 return false;
             }
@@ -104,7 +104,7 @@ namespace UserManagementApi.Services
                         "Permission Updated Successfully",
                         "Permissions",
                         Entity.PermissionId,
-                        Dto.LastActionUserId
+                        Dto.LastActionUserId ?? Guid.Empty
                     );
                 }
                 return saved;
@@ -116,7 +116,7 @@ namespace UserManagementApi.Services
                     $"Error Fetching Permission: {ex.Message}",
                     "Permissions",
                     Dto.PermissionId ?? Guid.Empty,
-                    Dto.LastActionUserId
+                    Dto.LastActionUserId ?? Guid.Empty
                 );
                 return false;
             }
@@ -127,7 +127,7 @@ namespace UserManagementApi.Services
                     $"Error Updating Permission: {ex.Message}",
                     "Permissions",
                     Dto.PermissionId ?? Guid.Empty,
-                    Dto.LastActionUserId
+                    Dto.LastActionUserId ?? Guid.Empty
                 );
                 return false;
             }

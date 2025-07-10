@@ -58,7 +58,7 @@ namespace UserManagementApi.Services
                         "PermissionCategory Created Successfully",
                         "PermissionCategories",
                         Entity.PermissionCategoryId,
-                        Dto.LastActionUserId
+                        Dto.LastActionUserId ?? Guid.Empty
                     );
                 }
                 return saved;
@@ -70,7 +70,7 @@ namespace UserManagementApi.Services
                     $"Error Creating PermissionCategory: {ex.Message}",
                     "PermissionCategories",
                     Entity.PermissionCategoryId,
-                    Dto.LastActionUserId
+                    Dto.LastActionUserId ?? Guid.Empty
                 );
                 return false;
             }
@@ -102,7 +102,7 @@ namespace UserManagementApi.Services
                         "PermissionCategory Updated Successfully",
                         "PermissionCategories",
                         Entity.PermissionCategoryId,
-                        Dto.LastActionUserId
+                        Dto.LastActionUserId ?? Guid.Empty
                     );
                 }
                 return saved;
@@ -114,7 +114,7 @@ namespace UserManagementApi.Services
                     $"Error Fetching PermissionCategory: {ex.Message}",
                     "PermissionCategories",
                     Dto.PermissionCategoryId ?? Guid.Empty,
-                    Dto.LastActionUserId
+                    Dto.LastActionUserId ?? Guid.Empty
                 );
                 return false;
             }
@@ -125,7 +125,7 @@ namespace UserManagementApi.Services
                     $"Error Updating PermissionCategory: {ex.Message}",
                     "PermissionCategories",
                     Dto.PermissionCategoryId ?? Guid.Empty,
-                    Dto.LastActionUserId
+                    Dto.LastActionUserId ?? Guid.Empty
                 );
                 return false;
             }
