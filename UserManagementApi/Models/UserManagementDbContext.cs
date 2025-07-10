@@ -24,7 +24,6 @@ public partial class UserManagementDbContext : DbContext
     public virtual DbSet<RolesPermission> RolesPermissions { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Log>(entity =>
@@ -47,7 +46,6 @@ public partial class UserManagementDbContext : DbContext
 
             entity.HasOne(d => d.ActionUser).WithMany(p => p.Logs)
                 .HasForeignKey(d => d.ActionUserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Logs_Users");
         });
 
@@ -69,7 +67,6 @@ public partial class UserManagementDbContext : DbContext
 
             entity.HasOne(d => d.LastActionUser).WithMany(p => p.Permissions)
                 .HasForeignKey(d => d.LastActionUserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Permissions_Users");
 
             entity.HasOne(d => d.PermissionCategory).WithMany(p => p.Permissions)
@@ -84,6 +81,7 @@ public partial class UserManagementDbContext : DbContext
                 .HasDefaultValueSql("(newid())")
                 .HasColumnName("PermissionCategoryID");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.IsVisible).HasDefaultValue(true);
             entity.Property(e => e.LastActionUserId).HasColumnName("LastActionUserID");
             entity.Property(e => e.Title)
                 .HasMaxLength(80)
@@ -92,7 +90,6 @@ public partial class UserManagementDbContext : DbContext
 
             entity.HasOne(d => d.LastActionUser).WithMany(p => p.PermissionCategories)
                 .HasForeignKey(d => d.LastActionUserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_PermissionCategories_Users");
         });
 
@@ -113,7 +110,6 @@ public partial class UserManagementDbContext : DbContext
 
             entity.HasOne(d => d.LastActionUser).WithMany(p => p.Roles)
                 .HasForeignKey(d => d.LastActionUserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Roles_Users");
         });
 
@@ -132,7 +128,6 @@ public partial class UserManagementDbContext : DbContext
 
             entity.HasOne(d => d.LastActionUser).WithMany(p => p.RolesPermissions)
                 .HasForeignKey(d => d.LastActionUserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_RolesPermissions_Users");
 
             entity.HasOne(d => d.Permission).WithMany(p => p.RolesPermissions)

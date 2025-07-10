@@ -18,7 +18,7 @@ public partial class Role
 
     public Guid? LastActionUserId { get; set; }
 
-    public virtual User LastActionUser { get; set; } = null!;
+    public virtual User? LastActionUser { get; set; }
 
     public virtual ICollection<RolesPermission> RolesPermissions { get; set; } = new List<RolesPermission>();
 

@@ -16,5 +16,5 @@ public partial class Log
 
     public DateTime ActionAt { get; set; }
 
-    public virtual User ActionUser { get; set; } = null!;
+    public virtual User? ActionUser { get; set; }
 }

@@ -44,7 +44,7 @@ namespace UserManagementApi.Services
                 IsVisible = true,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
-                LastActionUserId = Dto.LastActionUserId
+                LastActionUserId = Dto.LastActionUserId ?? Guid.Empty
             };
 
             try

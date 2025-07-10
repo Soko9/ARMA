@@ -16,7 +16,7 @@ public partial class PermissionCategory
 
     public Guid? LastActionUserId { get; set; }
 
-    public virtual User LastActionUser { get; set; } = null!;
+    public virtual User? LastActionUser { get; set; }
 
     public virtual ICollection<Permission> Permissions { get; set; } = new List<Permission>();
 }

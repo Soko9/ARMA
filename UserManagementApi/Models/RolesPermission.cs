@@ -16,7 +16,7 @@ public partial class RolesPermission
 
     public Guid? LastActionUserId { get; set; }
 
-    public virtual User LastActionUser { get; set; } = null!;
+    public virtual User? LastActionUser { get; set; }
 
     public virtual Permission Permission { get; set; } = null!;
 
