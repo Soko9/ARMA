@@ -61,10 +61,7 @@ namespace UserManagementApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (Dto.PermissionId == null || Dto.PermissionId != Id)
-                return BadRequest(new { Message = Messages.Mismatch() });
-
-            var Updated = await _Service.UpdateAsync(Dto);
+            var Updated = await _Service.UpdateAsync(Id, Dto);
 
             if (!Updated)
                 return NotFound(new { Message = Messages.PUpdateError() });
@@ -84,7 +81,7 @@ namespace UserManagementApi.Controllers
         }
 
         [HttpDelete("delete/{Id:Guid}")]
-        public async Task<IActionResult> Delete(Guid Id, Guid ActionId)
+        public async Task<IActionResult> Delete(Guid Id, [FromBody] Guid ActionId)
         {
             var Deleted = await _Service.DeleteAsync(Id, ActionId);
 

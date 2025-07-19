@@ -9,8 +9,8 @@ namespace UserManagementApi.Repo
         Task<IReadOnlyList<PermissionCategory>> GetAllAsync();
         Task<IReadOnlyList<PermissionCategory>> GetAllVisibleAsync();
         Task<bool> CreateAsync(PermissionCategoryDTO Dto);
-        Task<bool> UpdateAsync(PermissionCategoryDTO Dto);
-        Task<bool> ToggleVisibility(Guid Id, Guid ActionId);
-        Task<bool> DeleteAsync(Guid Id, Guid ActionId);
+        Task<bool> UpdateAsync(Guid Id, PermissionCategoryDTO Dto);
+        Task<bool> ToggleVisibility(Guid Id, Guid? ActionId);
+        Task<bool> DeleteAsync(Guid Id, Guid? ActionId);
     }
 }

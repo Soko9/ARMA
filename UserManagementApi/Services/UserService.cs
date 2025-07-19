@@ -45,12 +45,12 @@ namespace UserManagementApi.Services
         public async Task<bool> CreateAsync(UserDTO Dto)
         {
             (string Password, string Salt) = PasswordHelper.HashPassword(Dto.Password!);
-            (string Passcode, _) = PasswordHelper.HashPassword(PasswordHelper.GenerateRandomPasscode());
+            string Passcode = PasswordHelper.GenerateRandomPasscode();
             User Entity = new User
             {
                 UserId = Guid.NewGuid(),
                 FullName = Dto.FullName,
-                PasscodeHash = Passcode,
+                Passcode = Passcode,
                 PasswordHash = Password,
                 PasswordSalt = Salt,
                 FailedLoginAttempts = 0,
@@ -59,7 +59,7 @@ namespace UserManagementApi.Services
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
                 LastSuccessfulLoginAt = DateTime.Now,
-                LastActionUserId = Dto.LastActionUserId,
+                LastActionUserId = Dto.LastActionUserId!,
                 RoleId = Dto.RoleId,
             };
 
@@ -74,7 +74,7 @@ namespace UserManagementApi.Services
                         "User Created Successfully",
                         "Users",
                         Entity.UserId,
-                        Dto.LastActionUserId ?? Guid.Empty
+                        Dto.LastActionUserId!
                     );
                 }
                 return saved;
@@ -86,26 +86,26 @@ namespace UserManagementApi.Services
                     $"Error Creating User: {ex.Message}",
                     "Users",
                     Entity.UserId,
-                    Dto.LastActionUserId ?? Guid.Empty
+                    Dto.LastActionUserId!
                 );
                 return false;
             }
         }
 
-        public async Task<bool> UpdateAsync(UserDTO Dto)
+        public async Task<bool> UpdateAsync(Guid Id, UserDTO Dto)
         {
             try
             {
-                User? Entity = await _Table.FindAsync(Dto.UserId);
+                User? Entity = await _Table.FindAsync(Id);
 
                 if (Entity is null)
                 {
-                    throw new ArgumentNullException($"No Entity Found With ID: {Dto.UserId}");
+                    throw new ArgumentNullException($"No Entity Found With ID: {Id}");
                 }
 
                 Entity.FullName = Dto.FullName;
                 Entity.UpdatedAt = DateTime.Now;
-                Entity.LastActionUserId = Dto.LastActionUserId;
+                Entity.LastActionUserId = Dto.LastActionUserId!;
                 Entity.RoleId = Dto.RoleId;
 
                 _Table.Update(Entity);
@@ -117,8 +117,8 @@ namespace UserManagementApi.Services
                         "Update",
                         "User Updated Successfully",
                         "Users",
-                        Entity.UserId,
-                        Dto.LastActionUserId ?? Guid.Empty
+                        Id,
+                        Dto.LastActionUserId!
                     );
                 }
                 return saved;
@@ -129,8 +129,8 @@ namespace UserManagementApi.Services
                     "Error",
                     $"Error Fetching User: {ex.Message}",
                     "Users",
-                    Dto.UserId ?? Guid.Empty,
-                    Dto.LastActionUserId ?? Guid.Empty
+                    Id,
+                    Dto.LastActionUserId!
                 );
                 return false;
             }
@@ -140,14 +140,14 @@ namespace UserManagementApi.Services
                     "Error",
                     $"Error Updating User: {ex.Message}",
                     "Users",
-                    Dto.UserId ?? Guid.Empty,
-                    Dto.LastActionUserId ?? Guid.Empty
+                    Id,
+                    Dto.LastActionUserId!
                 );
                 return false;
             }
         }
 
-        public async Task<bool> ToggleActivity(Guid Id, Guid ActionId)
+        public async Task<bool> ToggleActivity(Guid Id, Guid? ActionId)
         {
             try
             {
@@ -172,7 +172,7 @@ namespace UserManagementApi.Services
                         "User Toggled Successfully",
                         "Users",
                         Id,
-                        ActionId
+                        ActionId!
                     );
                 }
                 return saved;
@@ -184,7 +184,7 @@ namespace UserManagementApi.Services
                     $"Error Fetching User: {ex.Message}",
                     "Users",
                     Id,
-                    ActionId
+                    ActionId!
                 );
                 return false;
             }
@@ -195,13 +195,13 @@ namespace UserManagementApi.Services
                     $"Error Toggling User: {ex.Message}",
                     "Users",
                     Id,
-                    ActionId
+                    ActionId!
                 );
                 return false;
             }
         }
 
-        public async Task<bool> DeleteAsync(Guid Id, Guid ActionId)
+        public async Task<bool> DeleteAsync(Guid Id, Guid? ActionId)
         {
             try
             {
@@ -222,7 +222,7 @@ namespace UserManagementApi.Services
                        "User Deleted Successfully",
                        "Users",
                        Id,
-                       ActionId
+                       ActionId!
                    );
                 }
                 return saved;
@@ -234,7 +234,7 @@ namespace UserManagementApi.Services
                     $"Error Fetching User: {ex.Message}",
                     "Users",
                     Id,
-                    ActionId
+                    ActionId!
                 );
                 return false;
             }
@@ -245,7 +245,7 @@ namespace UserManagementApi.Services
                     $"Error Deleting User: {ex.Message}",
                     "Users",
                     Id,
-                    ActionId
+                    ActionId!
                 );
                 return false;
             }
@@ -267,7 +267,7 @@ namespace UserManagementApi.Services
                 Entity.PasswordHash = Password;
                 Entity.PasswordSalt = Salt;
                 Entity.UpdatedAt = DateTime.Now;
-                Entity.LastActionUserId = Dto.LastActionUserId;
+                Entity.LastActionUserId = Dto.LastActionUserId!;
 
                 _Table.Update(Entity);
                 bool saved = await _Db.SaveChangesAsync() > 0;
@@ -279,7 +279,7 @@ namespace UserManagementApi.Services
                         "Password Updated Successfully",
                         "Users",
                         Id,
-                        Dto.LastActionUserId ?? Guid.Empty
+                        Dto.LastActionUserId!
                     );
                 }
                 return saved;
@@ -291,7 +291,7 @@ namespace UserManagementApi.Services
                     $"Error Fetching User: {ex.Message}",
                     "Users",
                     Id,
-                    Dto.LastActionUserId ?? Guid.Empty
+                    Dto.LastActionUserId!
                 );
                 return false;
             }
@@ -302,13 +302,13 @@ namespace UserManagementApi.Services
                     $"Error Updating Password: {ex.Message}",
                     "Users",
                     Id,
-                    Dto.LastActionUserId ?? Guid.Empty
+                    Dto.LastActionUserId!
                 );
                 return false;
             }
         }
 
-        public async Task<bool> ResetPasscodeAsync(Guid Id, Guid ActionId)
+        public async Task<bool> ResetPasscodeAsync(Guid Id, Guid? ActionId)
         {
             try
             {
@@ -319,11 +319,11 @@ namespace UserManagementApi.Services
                     throw new ArgumentNullException($"No Entity Found With ID: {Id}");
                 }
 
-                (string Passcode, _) = PasswordHelper.HashPassword(PasswordHelper.GenerateRandomPasscode());
+                string Passcode = PasswordHelper.GenerateRandomPasscode();
 
-                Entity.PasscodeHash = Passcode;
+                Entity.Passcode = Passcode;
                 Entity.UpdatedAt = DateTime.Now;
-                Entity.LastActionUserId = ActionId;
+                Entity.LastActionUserId = ActionId!;
 
                 _Table.Update(Entity);
                 bool saved = await _Db.SaveChangesAsync() > 0;
@@ -335,7 +335,7 @@ namespace UserManagementApi.Services
                         "Passcode Updated Successfully",
                         "Users",
                         Id,
-                        ActionId
+                        ActionId!
                     );
                 }
                 return saved;
@@ -347,7 +347,7 @@ namespace UserManagementApi.Services
                     $"Error Fetching User: {ex.Message}",
                     "Users",
                     Id,
-                    ActionId
+                    ActionId!
                 );
                 return false;
             }
@@ -358,7 +358,7 @@ namespace UserManagementApi.Services
                     $"Error Updating Passcode: {ex.Message}",
                     "Users",
                     Id,
-                    ActionId
+                    ActionId!
                 );
                 return false;
             }

@@ -42,7 +42,7 @@ namespace UserManagementApi.Controllers
         }
 
         [HttpDelete("delete/{Id:Guid}")]
-        public async Task<IActionResult> Delete(Guid Id, Guid ActionId)
+        public async Task<IActionResult> Delete(Guid Id, [FromBody] Guid ActionId)
         {
             var Deleted = await _Service.DeleteAsync(Id, ActionId);
 

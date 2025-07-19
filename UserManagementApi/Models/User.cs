@@ -6,7 +6,7 @@ public partial class User
 
     public string FullName { get; set; } = null!;
 
-    public string PasscodeHash { get; set; } = null!;
+    public string Passcode { get; set; } = null!;
 
     public string PasswordHash { get; set; } = null!;
 
@@ -26,7 +26,7 @@ public partial class User
 
     public Guid? LastActionUserId { get; set; }
 
-    public Guid RoleId { get; set; }
+    public Guid? RoleId { get; set; }
 
     public virtual ICollection<User> InverseLastActionUser { get; set; } = new List<User>();
 

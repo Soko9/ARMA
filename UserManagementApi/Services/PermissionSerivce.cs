@@ -44,7 +44,7 @@ namespace UserManagementApi.Services
                 IsVisible = true,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
-                LastActionUserId = Dto.LastActionUserId,
+                LastActionUserId = Dto.LastActionUserId!,
                 PermissionCategoryId = Dto.PermissionCategoryId,
             };
 
@@ -59,7 +59,7 @@ namespace UserManagementApi.Services
                         "Permission Created Successfully",
                         "Permissions",
                         Entity.PermissionId,
-                        Dto.LastActionUserId ?? Guid.Empty
+                        Dto.LastActionUserId!
                     );
                 }
                 return saved;
@@ -71,27 +71,27 @@ namespace UserManagementApi.Services
                     $"Error Creating Permission: {ex.Message}",
                     "Permissions",
                     Entity.PermissionId,
-                    Dto.LastActionUserId ?? Guid.Empty
+                    Dto.LastActionUserId!
                 );
                 return false;
             }
         }
 
-        public async Task<bool> UpdateAsync(PermissionDTO Dto)
+        public async Task<bool> UpdateAsync(Guid Id, PermissionDTO Dto)
         {
             try
             {
-                Permission? Entity = await _Table.FindAsync(Dto.PermissionId);
+                Permission? Entity = await _Table.FindAsync(Id);
 
                 if (Entity is null)
                 {
-                    throw new ArgumentNullException($"No Entity Found With ID: {Dto.PermissionId}");
+                    throw new ArgumentNullException($"No Entity Found With ID: {Id}");
                 }
 
                 Entity.Title = Dto.Title;
                 Entity.Description = Dto.Description;
                 Entity.UpdatedAt = DateTime.Now;
-                Entity.LastActionUserId = Dto.LastActionUserId;
+                Entity.LastActionUserId = Dto.LastActionUserId!;
                 Entity.PermissionCategoryId = Dto.PermissionCategoryId;
 
                 _Table.Update(Entity);
@@ -104,7 +104,7 @@ namespace UserManagementApi.Services
                         "Permission Updated Successfully",
                         "Permissions",
                         Entity.PermissionId,
-                        Dto.LastActionUserId ?? Guid.Empty
+                        Dto.LastActionUserId!
                     );
                 }
                 return saved;
@@ -115,8 +115,8 @@ namespace UserManagementApi.Services
                     "Error",
                     $"Error Fetching Permission: {ex.Message}",
                     "Permissions",
-                    Dto.PermissionId ?? Guid.Empty,
-                    Dto.LastActionUserId ?? Guid.Empty
+                    Id,
+                    Dto.LastActionUserId!
                 );
                 return false;
             }
@@ -126,14 +126,14 @@ namespace UserManagementApi.Services
                     "Error",
                     $"Error Updating Permission: {ex.Message}",
                     "Permissions",
-                    Dto.PermissionId ?? Guid.Empty,
-                    Dto.LastActionUserId ?? Guid.Empty
+                    Id,
+                    Dto.LastActionUserId!
                 );
                 return false;
             }
         }
 
-        public async Task<bool> ToggleVisibility(Guid Id, Guid ActionId)
+        public async Task<bool> ToggleVisibility(Guid Id, Guid? ActionId)
         {
             try
             {
@@ -146,7 +146,7 @@ namespace UserManagementApi.Services
 
                 Entity.IsVisible = !Entity.IsVisible;
                 Entity.UpdatedAt = DateTime.Now;
-                Entity.LastActionUserId = ActionId;
+                Entity.LastActionUserId = ActionId!;
 
                 _Table.Update(Entity);
                 bool saved = await _Db.SaveChangesAsync() > 0;
@@ -158,7 +158,7 @@ namespace UserManagementApi.Services
                         "Permission Toggled Successfully",
                         "Permissions",
                         Id,
-                        ActionId
+                        ActionId!
                     );
                 }
                 return saved;
@@ -170,7 +170,7 @@ namespace UserManagementApi.Services
                     $"Error Fetching Permission: {ex.Message}",
                     "Permissions",
                     Id,
-                    ActionId
+                    ActionId!
                 );
                 return false;
             }
@@ -181,13 +181,13 @@ namespace UserManagementApi.Services
                     $"Error Toggling Permission: {ex.Message}",
                     "Permissions",
                     Id,
-                    ActionId
+                    ActionId!
                 );
                 return false;
             }
         }
 
-        public async Task<bool> DeleteAsync(Guid Id, Guid ActionId)
+        public async Task<bool> DeleteAsync(Guid Id, Guid? ActionId)
         {
             try
             {
@@ -208,7 +208,7 @@ namespace UserManagementApi.Services
                        "Permission Deleted Successfully",
                        "Permissions",
                        Id,
-                       ActionId
+                       ActionId!
                    );
                 }
                 return saved;
@@ -220,7 +220,7 @@ namespace UserManagementApi.Services
                     $"Error Fetching Permission: {ex.Message}",
                     "Permissions",
                     Id,
-                    ActionId
+                    ActionId!
                 );
                 return false;
             }
@@ -231,7 +231,7 @@ namespace UserManagementApi.Services
                     $"Error Deleting Permission: {ex.Message}",
                     "Permissions",
                     Id,
-                    ActionId
+                    ActionId!
                 );
                 return false;
             }

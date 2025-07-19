@@ -10,8 +10,8 @@ namespace UserManagementApi.Repo
         Task<IReadOnlyList<Role>> GetAllVisibleAsync();
         Task<IReadOnlyList<Permission>> GetPermissionsByRole(Guid RoleId);
         Task<bool> CreateAsync(RoleDTO Dto);
-        Task<bool> UpdateAsync(RoleDTO Dto);
-        Task<bool> ToggleVisibility(Guid Id, Guid ActionId);
-        Task<bool> DeleteAsync(Guid Id, Guid ActionId);
+        Task<bool> UpdateAsync(Guid Id, RoleDTO Dto);
+        Task<bool> ToggleVisibility(Guid Id, Guid? ActionId);
+        Task<bool> DeleteAsync(Guid Id, Guid? ActionId);
     }
 }

@@ -44,7 +44,7 @@ namespace UserManagementApi.Services
                 IsVisible = true,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
-                LastActionUserId = Dto.LastActionUserId ?? Guid.Empty
+                LastActionUserId = Dto.LastActionUserId!
             };
 
             try
@@ -58,7 +58,7 @@ namespace UserManagementApi.Services
                         "PermissionCategory Created Successfully",
                         "PermissionCategories",
                         Entity.PermissionCategoryId,
-                        Dto.LastActionUserId ?? Guid.Empty
+                        Dto.LastActionUserId!
                     );
                 }
                 return saved;
@@ -70,27 +70,27 @@ namespace UserManagementApi.Services
                     $"Error Creating PermissionCategory: {ex.Message}",
                     "PermissionCategories",
                     Entity.PermissionCategoryId,
-                    Dto.LastActionUserId ?? Guid.Empty
+                    Dto.LastActionUserId!
                 );
                 return false;
             }
         }
 
-        public async Task<bool> UpdateAsync(PermissionCategoryDTO Dto)
+        public async Task<bool> UpdateAsync(Guid Id, PermissionCategoryDTO Dto)
         {
             try
             {
-                PermissionCategory? Entity = await _Table.FindAsync(Dto.PermissionCategoryId);
+                PermissionCategory? Entity = await _Table.FindAsync(Id);
 
                 if (Entity is null)
                 {
-                    throw new ArgumentNullException($"No Entity Found With ID: {Dto.PermissionCategoryId}");
+                    throw new ArgumentNullException($"No Entity Found With ID: {Id}");
                 }
 
                 Entity.Title = Dto.Title;
                 Entity.Priority = Dto.Priority;
                 Entity.UpdatedAt = DateTime.Now;
-                Entity.LastActionUserId = Dto.LastActionUserId;
+                Entity.LastActionUserId = Dto.LastActionUserId!;
 
                 _Table.Update(Entity);
                 bool saved = await _Db.SaveChangesAsync() > 0;
@@ -101,8 +101,8 @@ namespace UserManagementApi.Services
                         "Update",
                         "PermissionCategory Updated Successfully",
                         "PermissionCategories",
-                        Entity.PermissionCategoryId,
-                        Dto.LastActionUserId ?? Guid.Empty
+                        Id,
+                        Dto.LastActionUserId!
                     );
                 }
                 return saved;
@@ -113,8 +113,8 @@ namespace UserManagementApi.Services
                     "Error",
                     $"Error Fetching PermissionCategory: {ex.Message}",
                     "PermissionCategories",
-                    Dto.PermissionCategoryId ?? Guid.Empty,
-                    Dto.LastActionUserId ?? Guid.Empty
+                    Id,
+                    Dto.LastActionUserId!
                 );
                 return false;
             }
@@ -124,14 +124,14 @@ namespace UserManagementApi.Services
                     "Error",
                     $"Error Updating PermissionCategory: {ex.Message}",
                     "PermissionCategories",
-                    Dto.PermissionCategoryId ?? Guid.Empty,
-                    Dto.LastActionUserId ?? Guid.Empty
+                    Id,
+                    Dto.LastActionUserId
                 );
                 return false;
             }
         }
 
-        public async Task<bool> ToggleVisibility(Guid Id, Guid ActionId)
+        public async Task<bool> ToggleVisibility(Guid Id, Guid? ActionId)
         {
             try
             {
@@ -144,7 +144,7 @@ namespace UserManagementApi.Services
 
                 Entity.IsVisible = !Entity.IsVisible;
                 Entity.UpdatedAt = DateTime.Now;
-                Entity.LastActionUserId = ActionId;
+                Entity.LastActionUserId = ActionId!;
 
                 _Table.Update(Entity);
                 bool saved = await _Db.SaveChangesAsync() > 0;
@@ -156,7 +156,7 @@ namespace UserManagementApi.Services
                         "PermissionCategory Toggled Successfully",
                         "PermissionCategories",
                         Id,
-                        ActionId
+                        ActionId!
                     );
                 }
                 return saved;
@@ -168,7 +168,7 @@ namespace UserManagementApi.Services
                     $"Error Fetching PermissionCategory: {ex.Message}",
                     "PermissionCategories",
                     Id,
-                    ActionId
+                    ActionId!
                 );
                 return false;
             }
@@ -179,13 +179,13 @@ namespace UserManagementApi.Services
                     $"Error Toggling PermissionCategory: {ex.Message}",
                     "PermissionCategories",
                     Id,
-                    ActionId
+                    ActionId!
                 );
                 return false;
             }
         }
 
-        public async Task<bool> DeleteAsync(Guid Id, Guid ActionId)
+        public async Task<bool> DeleteAsync(Guid Id, Guid? ActionId)
         {
             try
             {
@@ -206,7 +206,7 @@ namespace UserManagementApi.Services
                        "PermissionCategory Deleted Successfully",
                        "PermissionCategories",
                        Id,
-                       ActionId
+                       ActionId!
                    );
                 }
                 return saved;
@@ -218,7 +218,7 @@ namespace UserManagementApi.Services
                     $"Error Fetching PermissionCategory: {ex.Message}",
                     "PermissionCategories",
                     Id,
-                    ActionId
+                    ActionId!
                 );
                 return false;
             }
@@ -229,7 +229,7 @@ namespace UserManagementApi.Services
                     $"Error Deleting PermissionCategory: {ex.Message}",
                     "PermissionCategories",
                     Id,
-                    ActionId
+                    ActionId!
                 );
                 return false;
             }

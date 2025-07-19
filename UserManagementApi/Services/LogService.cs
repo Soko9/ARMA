@@ -21,7 +21,7 @@ namespace UserManagementApi.Services
                 .OrderBy(L => L.ActionAt)
                 .ToListAsync();
 
-        public async Task LogAsync(string Type, string Desc, string Table, Guid RowId, Guid UserID)
+        public async Task LogAsync(string Type, string Desc, string Table, Guid RowId, Guid? UserID)
         {
             Log Entity = new Log
             {
@@ -30,7 +30,7 @@ namespace UserManagementApi.Services
                 Description = Desc,
                 ActionTableName = Table,
                 ActionRowId = RowId,
-                ActionUserId = UserID,
+                ActionUserId = UserID!,
                 ActionAt = DateTime.Now,
             };
 

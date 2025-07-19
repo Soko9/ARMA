@@ -152,7 +152,7 @@ public partial class UserManagementDbContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.LastActionUserId).HasColumnName("LastActionUserID");
             entity.Property(e => e.LastSuccessfulLoginAt).HasColumnType("datetime");
-            entity.Property(e => e.PasscodeHash)
+            entity.Property(e => e.Passcode)
                 .HasMaxLength(255)
                 .IsUnicode(false);
             entity.Property(e => e.PasswordHash)
