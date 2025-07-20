@@ -2,9 +2,7 @@
 {
     public class RolesPermissionsDTO
     {
-        public Guid RoleId { get; set; }
-
-        public Guid PermissionId { get; set; }
+        public required List<Guid> PermissionsIds { get; set; }
 
         public Guid? LastActionUserId { get; set; }
     }

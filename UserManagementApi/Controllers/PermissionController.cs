@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UserManagementApi.Constants;
 using UserManagementApi.DTOs.Permission;
+using UserManagementApi.Models;
 using UserManagementApi.Repo;
 
 namespace UserManagementApi.Controllers
@@ -19,18 +20,18 @@ namespace UserManagementApi.Controllers
         [HttpGet("get-by-id/{Id:Guid}")]
         public async Task<IActionResult> GetById(Guid Id)
         {
-            var Permission = await _Service.GetByIDAsync(Id);
+            Permission? PermissionRecord = await _Service.GetByIDAsync(Id);
 
-            if (Permission == null)
+            if (PermissionRecord == null)
                 return NotFound(new { Message = Messages.NotFound("Permission") });
 
-            return Ok(Permission);
+            return Ok(PermissionRecord);
         }
 
         [HttpGet("get-all")]
         public async Task<IActionResult> GetAll()
         {
-            var Permissions = await _Service.GetAllAsync();
+            IReadOnlyList<Permission> Permissions = await _Service.GetAllAsync();
             return Ok(Permissions);
         }
 
@@ -47,7 +48,7 @@ namespace UserManagementApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var Created = await _Service.CreateAsync(Dto);
+            bool Created = await _Service.CreateAsync(Dto);
 
             if (!Created)
                 return StatusCode(500, new { Message = Messages.PCreateError() });
@@ -61,7 +62,7 @@ namespace UserManagementApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var Updated = await _Service.UpdateAsync(Id, Dto);
+            bool Updated = await _Service.UpdateAsync(Id, Dto);
 
             if (!Updated)
                 return NotFound(new { Message = Messages.PUpdateError() });
@@ -72,7 +73,7 @@ namespace UserManagementApi.Controllers
         [HttpPatch("{Id:Guid}/toggle-visibility")]
         public async Task<IActionResult> ToggleVisibility(Guid Id, [FromBody] Guid ActionId)
         {
-            var Toggled = await _Service.ToggleVisibility(Id, ActionId);
+            bool Toggled = await _Service.ToggleVisibility(Id, ActionId);
 
             if (!Toggled)
                 return NotFound(new { Message = Messages.PToggleError() });
@@ -83,7 +84,7 @@ namespace UserManagementApi.Controllers
         [HttpDelete("delete/{Id:Guid}")]
         public async Task<IActionResult> Delete(Guid Id, [FromBody] Guid ActionId)
         {
-            var Deleted = await _Service.DeleteAsync(Id, ActionId);
+            bool Deleted = await _Service.DeleteAsync(Id, ActionId);
 
             if (!Deleted)
                 return NotFound(new { Message = Messages.PDeleteError() });

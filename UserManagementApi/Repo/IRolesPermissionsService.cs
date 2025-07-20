@@ -1,11 +1,11 @@
-﻿using UserManagementApi.DTOs.RolesPermission;
+﻿using UserManagementApi.Models;
 
 namespace UserManagementApi.Repo
 {
     public interface IRolesPermissionsService
     {
-        Task<bool> CreateAsync(RolesPermissionsDTO Dto);
-        Task<bool> ToggleActivity(Guid Id, Guid ActionId);
-        Task<bool> DeleteAsync(Guid Id, Guid ActionId);
+        Task<IReadOnlyList<Permission>> GetPermissionsByRoleAsync(Guid RoleId);
+
+        Task<bool> UpsertPermissionsForRoleAsync(Guid RoleId, List<Guid> PermissionsIds, Guid? ActionUser);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UserManagementApi.Constants;
 using UserManagementApi.DTOs.User;
+using UserManagementApi.Models;
 using UserManagementApi.Repo;
 
 namespace UserManagementApi.Controllers
@@ -19,32 +20,32 @@ namespace UserManagementApi.Controllers
         [HttpGet("get-by-id/{Id:Guid}")]
         public async Task<IActionResult> GetById(Guid Id)
         {
-            var User = await _Service.GetByIDAsync(Id);
+            User? UserRecord = await _Service.GetByIDAsync(Id);
 
-            if (User == null)
+            if (UserRecord == null)
                 return NotFound(new { Message = Messages.NotFound("User") });
 
-            return Ok(User);
+            return Ok(UserRecord);
         }
 
         [HttpGet("get-all")]
         public async Task<IActionResult> GetAll()
         {
-            var Users = await _Service.GetAllAsync();
+            IReadOnlyList<User> Users = await _Service.GetAllAsync();
             return Ok(Users);
         }
 
         [HttpGet("get-all-visible")]
         public async Task<IActionResult> GetAllActive()
         {
-            var Users = await _Service.GetAllActiveAsync();
+            IReadOnlyList<User> Users = await _Service.GetAllActiveAsync();
             return Ok(Users);
         }
 
         [HttpGet("get-all-locked")]
         public async Task<IActionResult> GetAllLocked()
         {
-            var Users = await _Service.GetAllLocedAsync();
+            IReadOnlyList<User> Users = await _Service.GetAllLocedAsync();
             return Ok(Users);
         }
 
@@ -54,7 +55,7 @@ namespace UserManagementApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var Created = await _Service.CreateAsync(Dto);
+            bool Created = await _Service.CreateAsync(Dto);
 
             if (!Created)
                 return StatusCode(500, new { Message = Messages.UCreateError() });
@@ -68,7 +69,7 @@ namespace UserManagementApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var Updated = await _Service.UpdateAsync(Id, Dto);
+            bool Updated = await _Service.UpdateAsync(Id, Dto);
 
             if (!Updated)
                 return NotFound(new { Message = Messages.UUpdateError() });
@@ -79,7 +80,7 @@ namespace UserManagementApi.Controllers
         [HttpPatch("{Id:Guid}/toggle-activity")]
         public async Task<IActionResult> ToggleActivity(Guid Id, [FromBody] Guid ActionId)
         {
-            var Toggled = await _Service.ToggleActivity(Id, ActionId);
+            bool Toggled = await _Service.ToggleActivity(Id, ActionId);
 
             if (!Toggled)
                 return NotFound(new { Message = Messages.UToggleError() });
@@ -90,7 +91,7 @@ namespace UserManagementApi.Controllers
         [HttpPatch("{Id:Guid}/reset-passcode")]
         public async Task<IActionResult> ResetPasscode(Guid Id, [FromBody] Guid ActionId)
         {
-            var Toggled = await _Service.ResetPasscodeAsync(Id, ActionId);
+            bool Toggled = await _Service.ResetPasscodeAsync(Id, ActionId);
 
             if (!Toggled)
                 return NotFound(new { Message = Messages.UResetPasscodeError() });
@@ -101,7 +102,7 @@ namespace UserManagementApi.Controllers
         [HttpPatch("{Id:Guid}/reset-password")]
         public async Task<IActionResult> ResetPassword(Guid Id, [FromBody] UserDTO Dto)
         {
-            var Toggled = await _Service.ResetPasswordAsync(Id, Dto);
+            bool Toggled = await _Service.ResetPasswordAsync(Id, Dto);
 
             if (!Toggled)
                 return NotFound(new { Message = Messages.UResetPasswordError() });
@@ -112,7 +113,7 @@ namespace UserManagementApi.Controllers
         [HttpDelete("delete/{Id:Guid}")]
         public async Task<IActionResult> Delete(Guid Id, [FromBody] Guid ActionId)
         {
-            var Deleted = await _Service.DeleteAsync(Id, ActionId);
+            bool Deleted = await _Service.DeleteAsync(Id, ActionId);
 
             if (!Deleted)
                 return NotFound(new { Message = Messages.UDeleteError() });

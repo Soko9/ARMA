@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using UserManagementApi.DTOs.RolesPermission;
 using UserManagementApi.Models;
 using UserManagementApi.Repo;
 
@@ -18,149 +17,87 @@ namespace UserManagementApi.Services
             _Log = Log;
         }
 
-        public async Task<bool> CreateAsync(RolesPermissionsDTO Dto)
-        {
-            RolesPermission Entity = new RolesPermission
-            {
-                RolePermissionId = Guid.NewGuid(),
-                RoleId = Dto.RoleId,
-                PermissionId = Dto.PermissionId,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now,
-                LastActionUserId = Dto.LastActionUserId,
-            };
+        public async Task<IReadOnlyList<Permission>> GetPermissionsByRoleAsync(Guid RoleId)
+            => await _Table
+                .Where(Rp => Rp.RoleId == RoleId && Rp.IsActive)
+                .Select(Rp => Rp.Permission)
+                .AsNoTracking()
+                .ToListAsync();
 
-            try
+        public async Task<bool> UpsertPermissionsForRoleAsync(Guid RoleId, List<Guid> PermissionsIds, Guid? ActionUser)
+        {
+            DateTime now = DateTime.Now;
+
+            List<RolesPermission> ExistingPermissionsForRole = _Table
+                .Where(Rp => Rp.RoleId == RoleId)
+                .ToList();
+
+            // deactivating all existing permissions
+            foreach (RolesPermission Rp in ExistingPermissionsForRole)
             {
-                await _Table.AddAsync(Entity);
-                bool saved = await _Db.SaveChangesAsync() > 0;
-                if (saved)
+                if (Rp.IsActive)
                 {
+                    Rp.IsActive = false;
+                    Rp.UpdatedAt = now;
+                    Rp.LastActionUserId = ActionUser;
+
                     await _Log.LogAsync(
-                        "Create",
-                        "RolePermission Created Successfully",
-                        "RolesPermissions",
-                        Entity.RolePermissionId,
-                        Dto.LastActionUserId ?? Guid.Empty
+                        "Decativating Permission",
+                        $"Deactivated Permission {Rp.PermissionId} For Role {Rp.RoleId}",
+                        "RolesPermission",
+                        Rp.RolePermissionId,
+                        ActionUser
                     );
                 }
-                return saved;
             }
-            catch (Exception ex)
+
+            // re-activating / inserting given permissions
+            foreach (Guid PId in PermissionsIds)
             {
-                await _Log.LogAsync(
-                    "Error",
-                    $"Error Creating RolePermission: {ex.Message}",
-                    "RolesPermissions",
-                    Entity.RolePermissionId,
-                    Dto.LastActionUserId ?? Guid.Empty
-                );
-                return false;
-            }
-        }
+                RolesPermission? ExistingPermission = ExistingPermissionsForRole
+                    .FirstOrDefault(Rp => Rp.PermissionId == PId);
 
-        public async Task<bool> ToggleActivity(Guid Id, Guid ActionId)
-        {
-            try
-            {
-                RolesPermission? Entity = await _Table.FindAsync(Id);
-
-                if (Entity is null)
+                if (ExistingPermission != null)
                 {
-                    throw new ArgumentNullException($"No Entity Found With ID: {Id}");
-                }
+                    ExistingPermission.IsActive = true;
+                    ExistingPermission.UpdatedAt = now;
+                    ExistingPermission.LastActionUserId = ActionUser;
 
-                Entity.IsActive = !Entity.IsActive;
-                Entity.UpdatedAt = DateTime.Now;
-                Entity.LastActionUserId = ActionId;
-
-                _Table.Update(Entity);
-                bool saved = await _Db.SaveChangesAsync() > 0;
-
-                if (saved)
-                {
                     await _Log.LogAsync(
-                        "Toggle",
-                        "RolePermission Toggled Successfully",
-                        "RolesPermissions",
-                        Id,
-                        ActionId
+                        "Recativating Permission",
+                        $"Reactivated Permission {ExistingPermission.PermissionId} For Role {ExistingPermission.RoleId}",
+                        "RolesPermission",
+                        ExistingPermission.RolePermissionId,
+                        ActionUser
                     );
                 }
-                return saved;
-            }
-            catch (ArgumentNullException ex)
-            {
-                await _Log.LogAsync(
-                    "Error",
-                    $"Error Fetching RolePermission: {ex.Message}",
-                    "RolesPermissions",
-                    Id,
-                    ActionId
-                );
-                return false;
-            }
-            catch (Exception ex)
-            {
-                await _Log.LogAsync(
-                    "Error",
-                    $"Error Toggling RolePermission: {ex.Message}",
-                    "RolesPermissions",
-                    Id,
-                    ActionId
-                );
-                return false;
-            }
-        }
-
-        public async Task<bool> DeleteAsync(Guid Id, Guid ActionId)
-        {
-            try
-            {
-                RolesPermission? Entity = await _Table.FindAsync(Id);
-
-                if (Entity is null)
+                else
                 {
-                    throw new ArgumentNullException($"No Entity Found With ID: {Id}");
-                }
+                    Guid NewGuid = Guid.NewGuid();
+                    RolesPermission NewRolePermission = new RolesPermission
+                    {
+                        RolePermissionId = NewGuid,
+                        RoleId = RoleId,
+                        PermissionId = PId,
+                        IsActive = true,
+                        CreatedAt = now,
+                        UpdatedAt = now,
+                        LastActionUserId = ActionUser
+                    };
 
-                _Table.Remove(Entity);
-                bool saved = await _Db.SaveChangesAsync() > 0;
-
-                if (saved)
-                {
+                    await _Table.AddAsync(NewRolePermission);
                     await _Log.LogAsync(
-                       "Delete",
-                       "RolePermission Deleted Successfully",
-                       "RolesPermissions",
-                       Id,
-                       ActionId
-                   );
+                            "Create",
+                            "RolePermission Created Successfully",
+                            "RolesPermission",
+                            NewGuid,
+                            ActionUser
+                        );
                 }
-                return saved;
             }
-            catch (ArgumentNullException ex)
-            {
-                await _Log.LogAsync(
-                    "Error",
-                    $"Error Fetching RolePermission: {ex.Message}",
-                    "RolesPermissions",
-                    Id,
-                    ActionId
-                );
-                return false;
-            }
-            catch (Exception ex)
-            {
-                await _Log.LogAsync(
-                    "Error",
-                    $"Error Deleting RolePermission: {ex.Message}",
-                    "RolesPermissions",
-                    Id,
-                    ActionId
-                );
-                return false;
-            }
+
+            await _Db.SaveChangesAsync();
+            return true;
         }
     }
 }

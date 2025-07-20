@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UserManagementApi.Constants;
 using UserManagementApi.DTOs.Role;
+using UserManagementApi.Models;
 using UserManagementApi.Repo;
 
 namespace UserManagementApi.Controllers
@@ -19,25 +20,25 @@ namespace UserManagementApi.Controllers
         [HttpGet("get-by-id/{Id:Guid}")]
         public async Task<IActionResult> GetById(Guid Id)
         {
-            var Role = await _Service.GetByIDAsync(Id);
+            Role? RoleRecord = await _Service.GetByIDAsync(Id);
 
-            if (Role == null)
+            if (RoleRecord == null)
                 return NotFound(new { Message = Messages.NotFound("Role") });
 
-            return Ok(Role);
+            return Ok(RoleRecord);
         }
 
         [HttpGet("get-all")]
         public async Task<IActionResult> GetAll()
         {
-            var Roles = await _Service.GetAllAsync();
+            IReadOnlyList<Role> Roles = await _Service.GetAllAsync();
             return Ok(Roles);
         }
 
         [HttpGet("get-all-visible")]
         public async Task<IActionResult> GetAllVisible()
         {
-            var Roles = await _Service.GetAllVisibleAsync();
+            IReadOnlyList<Role> Roles = await _Service.GetAllVisibleAsync();
             return Ok(Roles);
         }
 
@@ -47,7 +48,7 @@ namespace UserManagementApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var Created = await _Service.CreateAsync(Dto);
+            bool Created = await _Service.CreateAsync(Dto);
 
             if (!Created)
                 return StatusCode(500, new { Message = Messages.RCreateError() });
@@ -61,7 +62,7 @@ namespace UserManagementApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var Updated = await _Service.UpdateAsync(Id, Dto);
+            bool Updated = await _Service.UpdateAsync(Id, Dto);
 
             if (!Updated)
                 return NotFound(new { Message = Messages.RUpdateError() });
@@ -72,7 +73,7 @@ namespace UserManagementApi.Controllers
         [HttpPatch("{Id:Guid}/toggle-visibility")]
         public async Task<IActionResult> ToggleVisibility(Guid Id, [FromBody] Guid ActionId)
         {
-            var Toggled = await _Service.ToggleVisibility(Id, ActionId);
+            bool Toggled = await _Service.ToggleVisibility(Id, ActionId);
 
             if (!Toggled)
                 return NotFound(new { Message = Messages.RToggleError() });
@@ -83,7 +84,7 @@ namespace UserManagementApi.Controllers
         [HttpDelete("delete/{Id:Guid}")]
         public async Task<IActionResult> Delete(Guid Id, [FromBody] Guid ActionId)
         {
-            var Deleted = await _Service.DeleteAsync(Id, ActionId);
+            bool Deleted = await _Service.DeleteAsync(Id, ActionId);
 
             if (!Deleted)
                 return NotFound(new { Message = Messages.RDeleteError() });

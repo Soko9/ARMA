@@ -34,13 +34,6 @@ namespace UserManagementApi.Services
                 .OrderBy(R => R.CreatedAt)
                 .ToListAsync();
 
-        public async Task<IReadOnlyList<Permission>> GetPermissionsByRole(Guid RoleId)
-            => await _Db.RolesPermissions
-                .Where(Rp => Rp.RoleId == RoleId)
-                .Select(Rp => Rp.Permission)
-                .AsNoTracking()
-                .ToListAsync();
-
         public async Task<bool> CreateAsync(RoleDTO Dto)
         {
             Role Entity = new Role
