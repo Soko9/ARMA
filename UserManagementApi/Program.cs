@@ -1,25 +1,16 @@
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 using UserManagementApi.Middlewares;
 using UserManagementApi.Models;
 using UserManagementApi.Repo;
 using UserManagementApi.Services;
 
-var Builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder Builder = WebApplication.CreateBuilder(args);
 
-ConfigurationManager Configuration = Builder.Configuration;
-
-Builder.Services.AddDbContext<UserManagementDbContext>(Options =>
-    Options.UseSqlServer(Configuration.GetConnectionString("DBConnectionString")));
-
-Builder.Services.AddScoped<ILogService, LogService>();
-Builder.Services.AddScoped<IPermissionCategoryService, PermissionCategoryService>();
-Builder.Services.AddScoped<IPermissionService, PermissionService>();
-Builder.Services.AddScoped<IRoleService, RoleService>();
-Builder.Services.AddScoped<IRolesPermissionsService, RolesPermissionsService>();
-Builder.Services.AddScoped<IUserService, UserService>();
-
-Builder.Services.AddControllers(/*Options => { Options.Filters.Add(new AuthorizeFilter()); }*/);
+Builder.Services.AddControllers(Options => { Options.Filters.Add(new AuthorizeFilter()); });
 Builder.Services.AddEndpointsApiExplorer();
 Builder.Services.AddSwaggerGen(Options =>
 {
@@ -51,22 +42,48 @@ Builder.Services.AddSwaggerGen(Options =>
         }
     });
 });
+Builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", Options =>
+    {
+        Options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuer = true,
+            ValidIssuer = "auth-api",
+            ValidateAudience = true,
+            ValidAudience = "arma-system",
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("X2n+avfQZpK5HVVQQK1Hnp3WysAoIXIE8w6zPfwFq4g")),
+            ValidateLifetime = true
+        };
+    });
 
-var App = Builder.Build();
+ConfigurationManager Configuration = Builder.Configuration;
 
-if (App.Environment.IsDevelopment())
-{
-    App.UseSwagger();
-    App.UseSwaggerUI();
-}
+Builder.Services.AddDbContext<UserManagementDbContext>(Options =>
+    Options.UseSqlServer(Configuration.GetConnectionString("DBConnectionString")));
+
+Builder.Services.AddScoped<ILogService, LogService>();
+Builder.Services.AddScoped<IPermissionCategoryService, PermissionCategoryService>();
+Builder.Services.AddScoped<IPermissionService, PermissionService>();
+Builder.Services.AddScoped<IRoleService, RoleService>();
+Builder.Services.AddScoped<IRolesPermissionsService, RolesPermissionsService>();
+Builder.Services.AddScoped<IUserService, UserService>();
+
+WebApplication App = Builder.Build();
+
+//if (App.Environment.IsDevelopment())
+//{
+//    App.UseSwagger();
+//    App.UseSwaggerUI();
+//}
 
 App.UseHttpsRedirection();
 
 App.UseMiddleware<ApiKeyMiddleware>();
 
-//App.UseAuthentication();
+App.UseAuthentication();
 
-//App.UseAuthorization();
+App.UseAuthorization();
 
 App.MapControllers();
 

@@ -1,6 +1,5 @@
 ﻿namespace UserManagementApi.Middlewares
 {
-    // You may need to install the Microsoft.AspNetCore.Http.Abstractions package into your project
     public class ApiKeyMiddleware
     {
         private readonly RequestDelegate _next;
@@ -29,15 +28,6 @@
             }
 
             await _next(HttpContext);
-        }
-    }
-
-    // Extension method used to add the middleware to the HTTP request pipeline.
-    public static class ApiKeyMiddlewareExtensions
-    {
-        public static IApplicationBuilder UseApiKeyMiddleware(this IApplicationBuilder builder)
-        {
-            return builder.UseMiddleware<ApiKeyMiddleware>();
         }
     }
 }

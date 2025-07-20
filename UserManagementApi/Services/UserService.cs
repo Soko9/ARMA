@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SharedHelpers.Helpers;
 using UserManagementApi.DTOs.User;
-using UserManagementApi.Helpers;
 using UserManagementApi.Models;
 using UserManagementApi.Repo;
 
@@ -44,15 +44,14 @@ namespace UserManagementApi.Services
 
         public async Task<bool> CreateAsync(UserDTO Dto)
         {
-            (string Password, string Salt) = PasswordHelper.HashPassword(Dto.Password!);
+            string PasswordHashed = PasswordHelper.HashPassword(Dto.Password!);
             string Passcode = PasswordHelper.GenerateRandomPasscode();
             User Entity = new User
             {
                 UserId = Guid.NewGuid(),
                 FullName = Dto.FullName,
                 Passcode = Passcode,
-                PasswordHash = Password,
-                PasswordSalt = Salt,
+                PasswordHash = PasswordHashed,
                 FailedLoginAttempts = 0,
                 IsLocked = false,
                 IsActive = true,
@@ -262,10 +261,9 @@ namespace UserManagementApi.Services
                     throw new ArgumentNullException($"No Entity Found With ID: {Id}");
                 }
 
-                (string Password, string Salt) = PasswordHelper.HashPassword(Dto.Password!);
+                string PasswordHashed = PasswordHelper.HashPassword(Dto.Password!);
 
-                Entity.PasswordHash = Password;
-                Entity.PasswordSalt = Salt;
+                Entity.PasswordHash = PasswordHashed;
                 Entity.UpdatedAt = DateTime.Now;
                 Entity.LastActionUserId = Dto.LastActionUserId!;
 

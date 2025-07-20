@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace UserManagementApi.Models;
+namespace AuthApi.Models;
 
 public partial class User
 {
@@ -38,14 +38,4 @@ public partial class User
     public virtual User? LastActionUser { get; set; }
 
     public virtual ICollection<Log> Logs { get; set; } = new List<Log>();
-
-    public virtual ICollection<PermissionCategory> PermissionCategories { get; set; } = new List<PermissionCategory>();
-
-    public virtual ICollection<Permission> Permissions { get; set; } = new List<Permission>();
-
-    public virtual Role? Role { get; set; }
-
-    public virtual ICollection<Role> Roles { get; set; } = new List<Role>();
-
-    public virtual ICollection<RolesPermission> RolesPermissions { get; set; } = new List<RolesPermission>();
 }

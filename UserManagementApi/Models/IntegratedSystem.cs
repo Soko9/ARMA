@@ -3,15 +3,15 @@ using System.Collections.Generic;
 
 namespace UserManagementApi.Models;
 
-public partial class Permission
+public partial class IntegratedSystem
 {
-    public Guid PermissionId { get; set; }
+    public Guid SystemId { get; set; }
 
     public string Title { get; set; } = null!;
 
     public string? Description { get; set; }
 
-    public bool IsVisible { get; set; }
+    public bool IsActive { get; set; }
 
     public DateTime CreatedAt { get; set; }
 
@@ -19,11 +19,7 @@ public partial class Permission
 
     public Guid? LastActionUserId { get; set; }
 
-    public Guid PermissionCategoryId { get; set; }
+    public virtual ICollection<IpwhiteList> IpwhiteLists { get; set; } = new List<IpwhiteList>();
 
     public virtual User? LastActionUser { get; set; }
-
-    public virtual PermissionCategory PermissionCategory { get; set; } = null!;
-
-    public virtual ICollection<RolesPermission> RolesPermissions { get; set; } = new List<RolesPermission>();
 }

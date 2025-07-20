@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace UserManagementApi.Models;
+namespace AuthApi.Models;
 
 public partial class Log
 {

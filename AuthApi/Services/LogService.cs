@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using UserManagementApi.Models;
-using UserManagementApi.Repo;
+﻿using AuthApi.Models;
+using AuthApi.Repo;
+using Microsoft.EntityFrameworkCore;
 
-namespace UserManagementApi.Services
+namespace AuthApi.Services
 {
     public class LogService : ILogService
     {
@@ -12,7 +12,7 @@ namespace UserManagementApi.Services
         public LogService(UserManagementDbContext Db)
         {
             _Db = Db;
-            _Table = Db.Logs;
+            _Table = _Db.Logs;
         }
 
         public async Task<IReadOnlyList<Log>> GetAllAsync()

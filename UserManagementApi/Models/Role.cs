@@ -1,4 +1,7 @@
-﻿namespace UserManagementApi.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace UserManagementApi.Models;
 
 public partial class Role
 {

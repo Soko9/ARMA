@@ -1,34 +1,14 @@
-﻿using System.Security.Cryptography;
-using System.Text;
+﻿using System.Text;
 
-namespace UserManagementApi.Helpers
+namespace SharedHelpers.Helpers
 {
     public class PasswordHelper
     {
-        public static (string Hash, string Salt) HashPassword(string Password)
-        {
-            byte[] SaltBytes = new byte[16];
-            using RandomNumberGenerator RandomNumber = RandomNumberGenerator.Create();
-            RandomNumber.GetBytes(SaltBytes);
-            string Salt = Convert.ToBase64String(SaltBytes);
+        public static string HashPassword(string Password)
+            => BCrypt.Net.BCrypt.HashPassword(Password);
 
-            using SHA256 Sha = SHA256.Create();
-            byte[] CombinedBytes = Encoding.UTF8.GetBytes(Password + Salt);
-            byte[] HashBytes = Sha.ComputeHash(CombinedBytes);
-            string Hash = Convert.ToBase64String(HashBytes);
-
-            return (Hash, Salt);
-        }
-
-        public static bool VerifyPassword(string Password, string StoredHash, string StoredSalt)
-        {
-            using SHA256 Sha = SHA256.Create();
-            byte[] CombinedBytes = Encoding.UTF8.GetBytes(Password + StoredSalt);
-            byte[] HashBytes = Sha.ComputeHash(CombinedBytes);
-            string Hash = Convert.ToBase64String(HashBytes);
-
-            return Hash == StoredHash;
-        }
+        public static bool VerifyPassword(string Password, string StoredHash)
+            => BCrypt.Net.BCrypt.Verify(Password, StoredHash);
 
         public static string GenerateRandomPasscode(int Length = 5)
         {
