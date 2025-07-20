@@ -1,38 +1,73 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using UserManagementApi.Middlewares;
 using UserManagementApi.Models;
 using UserManagementApi.Repo;
 using UserManagementApi.Services;
 
-var builder = WebApplication.CreateBuilder(args);
+var Builder = WebApplication.CreateBuilder(args);
 
-ConfigurationManager configuration = builder.Configuration;
+ConfigurationManager Configuration = Builder.Configuration;
 
-builder.Services.AddDbContext<UserManagementDbContext>(options =>
-    options.UseSqlServer(configuration.GetConnectionString("DBConnectionString")));
+Builder.Services.AddDbContext<UserManagementDbContext>(Options =>
+    Options.UseSqlServer(Configuration.GetConnectionString("DBConnectionString")));
 
-builder.Services.AddScoped<ILogService, LogService>();
-builder.Services.AddScoped<IPermissionCategoryService, PermissionCategoryService>();
-builder.Services.AddScoped<IPermissionService, PermissionService>();
-builder.Services.AddScoped<IRoleService, RoleService>();
-builder.Services.AddScoped<IRolesPermissionsService, RolesPermissionsService>();
-builder.Services.AddScoped<IUserService, UserService>();
+Builder.Services.AddScoped<ILogService, LogService>();
+Builder.Services.AddScoped<IPermissionCategoryService, PermissionCategoryService>();
+Builder.Services.AddScoped<IPermissionService, PermissionService>();
+Builder.Services.AddScoped<IRoleService, RoleService>();
+Builder.Services.AddScoped<IRolesPermissionsService, RolesPermissionsService>();
+Builder.Services.AddScoped<IUserService, UserService>();
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
+Builder.Services.AddControllers(/*Options => { Options.Filters.Add(new AuthorizeFilter()); }*/);
+Builder.Services.AddEndpointsApiExplorer();
+Builder.Services.AddSwaggerGen(Options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    Options.SwaggerDoc("v1", new OpenApiInfo { Title = "UserManagement API", Version = "v1" });
+
+    Options.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
+    {
+        Description = $"API Key needed to access the endpoints. Example: `{ApiKeyMiddleware.ApiKeyHeaderName}: YOUR_KEY_HERE`",
+        In = ParameterLocation.Header,
+        Name = ApiKeyMiddleware.ApiKeyHeaderName,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "ApiKeyScheme"
+    });
+
+    Options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "ApiKey"
+                },
+                In = ParameterLocation.Header,
+                Name = ApiKeyMiddleware.ApiKeyHeaderName
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
+var App = Builder.Build();
+
+if (App.Environment.IsDevelopment())
+{
+    App.UseSwagger();
+    App.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+App.UseHttpsRedirection();
 
-app.UseAuthorization();
+App.UseMiddleware<ApiKeyMiddleware>();
 
-app.MapControllers();
+//App.UseAuthentication();
 
-app.Run();
+//App.UseAuthorization();
+
+App.MapControllers();
+
+App.Run();
