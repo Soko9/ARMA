@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using System.Text;
 using UserManagementApi.Middlewares;
 using UserManagementApi.Models;
@@ -12,36 +11,36 @@ WebApplicationBuilder Builder = WebApplication.CreateBuilder(args);
 
 Builder.Services.AddControllers(Options => { Options.Filters.Add(new AuthorizeFilter()); });
 Builder.Services.AddEndpointsApiExplorer();
-Builder.Services.AddSwaggerGen(Options =>
-{
-    Options.SwaggerDoc("v1", new OpenApiInfo { Title = "UserManagement API", Version = "v1" });
+//Builder.Services.AddSwaggerGen(Options =>
+//{
+//    Options.SwaggerDoc("v1", new OpenApiInfo { Title = "UserManagement API", Version = "v1" });
 
-    Options.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
-    {
-        Description = $"API Key needed to access the endpoints. Example: `{ApiKeyMiddleware.ApiKeyHeaderName}: YOUR_KEY_HERE`",
-        In = ParameterLocation.Header,
-        Name = ApiKeyMiddleware.ApiKeyHeaderName,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "ApiKeyScheme"
-    });
+//    Options.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
+//    {
+//        Description = $"API Key needed to access the endpoints. Example: `{ApiKeyMiddleware.ApiKeyHeaderName}: YOUR_KEY_HERE`",
+//        In = ParameterLocation.Header,
+//        Name = ApiKeyMiddleware.ApiKeyHeaderName,
+//        Type = SecuritySchemeType.ApiKey,
+//        Scheme = "ApiKeyScheme"
+//    });
 
-    Options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "ApiKey"
-                },
-                In = ParameterLocation.Header,
-                Name = ApiKeyMiddleware.ApiKeyHeaderName
-            },
-            Array.Empty<string>()
-        }
-    });
-});
+//    Options.AddSecurityRequirement(new OpenApiSecurityRequirement
+//    {
+//        {
+//            new OpenApiSecurityScheme
+//            {
+//                Reference = new OpenApiReference
+//                {
+//                    Type = ReferenceType.SecurityScheme,
+//                    Id = "ApiKey"
+//                },
+//                In = ParameterLocation.Header,
+//                Name = ApiKeyMiddleware.ApiKeyHeaderName
+//            },
+//            Array.Empty<string>()
+//        }
+//    });
+//});
 Builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", Options =>
     {

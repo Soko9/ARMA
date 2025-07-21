@@ -1,6 +1,7 @@
 ﻿using AuthApi.DTOs;
 using AuthApi.Repo;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace AuthApi.Controllers
 {
@@ -16,6 +17,7 @@ namespace AuthApi.Controllers
         }
 
         [HttpPost]
+        [EnableRateLimiting("LoginPolicy")]
         public async Task<IActionResult> LoginAsync([FromBody] AuthRequest Request)
         {
             if (Request.Passcode == null || Request.Password == null)
